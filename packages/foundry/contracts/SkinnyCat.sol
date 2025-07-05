@@ -3,14 +3,29 @@ pragma solidity ^0.8.22;
 
 import { OApp, Origin, MessagingFee } from "@layerzerolabs/oapp-evm/contracts/oapp/OApp.sol";
 import { OAppOptionsType3 } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/OAppOptionsType3.sol";
+import { OptionsBuilder } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/OptionsBuilder.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract SkinnyCat is OApp, OAppOptionsType3 {
+    using OptionsBuilder for bytes;
+
     /// @notice Last string received from any remote chain
     string public lastMessage;
 
+    /// @notice Last ETH amount received from any remote chain
+    uint256 public lastEthAmount;
+
+    /// @notice Last sender address from any remote chain
+    address public lastSender;
+
     /// @notice Msg type for sending a string, for use in OAppOptionsType3 as an enforced option
     uint16 public constant SEND = 1;
+
+    /// @notice Msg type for sending a string with ETH
+    uint16 public constant SEND_WITH_ETH = 2;
+
+    /// @notice Event emitted when ETH is received
+    event EthReceived(address indexed sender, uint256 amount, string message);
 
     /// @notice Initialize with Endpoint V2 and owner address
     /// @param _endpoint The local chain's LayerZero Endpoint V2 address
@@ -94,22 +109,61 @@ contract SkinnyCat is OApp, OAppOptionsType3 {
     /// @dev   _executor  Executor address that delivered the message
     /// @dev   _extraData Additional data from the Executor (unused here)
     function _lzReceive(
-        Origin calldata, /*_origin*/
+        Origin calldata _origin, /*_origin*/
         bytes32, /*_guid*/
         bytes calldata _message,
         address, /*_executor*/
         bytes calldata /*_extraData*/
     ) internal override {
-        // 1. Decode the incoming bytes into a string
-        //    You can use abi.decode, abi.decodePacked, or directly splice bytes
-        //    if you know the format of your data structures
-        string memory _string = abi.decode(_message, (string));
+        // Try to decode as string with ETH first
+        try this.decodeStringWithEth(_message) returns (string memory _string, uint256 _ethAmount, address _receiver) {
+            // Handle string with ETH message
+            lastMessage = _string;
+            lastEthAmount = _ethAmount;
+            lastSender = _bytesToAddress(_origin.sender);
 
-        // 2. Apply your custom logic. In this example, store it in `lastMessage`.
-        lastMessage = _string;
+            // Emit event for ETH received
+            emit EthReceived(lastSender, _ethAmount, _string);
+        } catch {
+            // Fallback to decode as simple string
+            string memory _string = abi.decode(_message, (string));
+            lastMessage = _string;
+            lastEthAmount = 0;
+            lastSender = _bytesToAddress(_origin.sender);
+        }
 
         // 3. (Optional) Trigger further on-chain actions.
         //    e.g., emit an event, mint tokens, call another contract, etc.
         //    emit MessageReceived(_origin.srcEid, _string);
     }
+
+    /// @notice Helper function to decode string with ETH message
+    /// @param _message The encoded message
+    /// @return _string The decoded string
+    /// @return _ethAmount The decoded ETH amount
+    /// @return _receiver The decoded receiver address
+    function decodeStringWithEth(bytes calldata _message)
+        external
+        pure
+        returns (string memory _string, uint256 _ethAmount, address _receiver)
+    {
+        return abi.decode(_message, (string, uint256, address));
+    }
+
+    /// @notice Helper function to convert bytes32 to address
+    /// @param _bytes The bytes32 value to convert
+    /// @return The converted address
+    function _bytesToAddress(bytes32 _bytes) internal pure returns (address) {
+        return address(uint160(uint256(_bytes)));
+    }
+
+    /// @notice Helper function to convert address to bytes32
+    /// @param _addr The address to convert
+    /// @return The converted bytes32
+    function _addressToBytes32(address _addr) internal pure returns (bytes32) {
+        return bytes32(uint256(uint160(_addr)));
+    }
+
+    /// @notice Allow contract to receive ETH
+    receive() external payable { }
 }

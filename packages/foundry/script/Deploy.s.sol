@@ -20,11 +20,11 @@ contract DeployScript is ScaffoldETHDeploy {
         // Deploys all your contracts sequentially
         // Add new deployments here when needed
 
-        // DeployFatCatContract deployFatCatContract = new DeployFatCatContract();
-        // deployFatCatContract.run(endpointoptimism);
+        DeployFatCatContract deployFatCatContract = new DeployFatCatContract();
+        deployFatCatContract.run(endpointoptimism);
 
-        DeploySkinnyCatContract deploySkinnyCatContract = new DeploySkinnyCatContract();
-        deploySkinnyCatContract.run(endpointbase);
+        // DeploySkinnyCatContract deploySkinnyCatContract = new DeploySkinnyCatContract();
+        // deploySkinnyCatContract.run(endpointbase);
 
         // Deploy another contract
         // DeployMyContract myContract = new DeployMyContract();
