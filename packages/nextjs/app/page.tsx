@@ -1,36 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { ChainAndTokenSelector } from "~~/components/ChainAndTokenSelector";
+import { NextPage } from "next";
+//import { useAccount } from "wagmi";
+import { ChainSelector } from "~~/components/ChainAndTokenSelector";
 import { FatCat } from "~~/components/FatCat";
+import { TokenSwap } from "~~/components/TokenSwap";
 
-// Mock data
-const chains = [
-  { id: 1, name: "Arbitrum", icon: "🌀" },
-  { id: 2, name: "Optimism", icon: "🔴" },
-  { id: 3, name: "Base", icon: "🟦" },
-  { id: 4, name: "Scroll", icon: "🟡" },
-];
-
-const tokens = [
-  { symbol: "DAI", balance: 12.34 },
-  { symbol: "USDC", balance: 9.87 },
-  { symbol: "WETH", balance: 5.67 },
-  { symbol: "OP", balance: 2.11 },
-  { symbol: "ARB", balance: 1.23 },
-];
-
-export default function Home() {
+const Home: NextPage = () => {
+  //const { address: connectedAddress } = useAccount();
   const [weight, setWeight] = useState(1);
-  const [selectedChain, setSelectedChain] = useState<any>(null);
-  const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
+  const [chainId, setChainId] = useState(8453);
 
   const feedCat = () => setWeight(w => Math.min(w + 1, 10));
   const exerciseCat = () => setWeight(w => Math.max(w - 1, 1));
 
-  const handleSelectionChange = (chain: any, tokens: string[]) => {
-    setSelectedChain(chain);
-    setSelectedTokens(tokens);
+  // Handle chain change
+  const handleChainChange = (newChainId: number) => {
+    setChainId(newChainId);
   };
 
   return (
@@ -40,7 +27,12 @@ export default function Home() {
       <div className="flex flex-col lg:flex-row items-center justify-center gap-10 w-full max-w-6xl">
         {/* Left: Chain and Token Selector */}
         <div className="w-full max-w-md">
-          <ChainAndTokenSelector chains={chains} tokens={tokens} onSelectionChange={handleSelectionChange} />
+          <ChainSelector onChainChange={handleChainChange} initialChainId={chainId} />
+
+          {/* Add TokenSwap component */}
+          <div className="mt-6">
+            <TokenSwap chainId={chainId} />
+          </div>
         </div>
 
         {/* Right: FatCat */}
@@ -55,20 +47,10 @@ export default function Home() {
               🏃 Exercise Cat
             </button>
           </div>
-
-          {selectedTokens.length > 0 && (
-            <div className="text-center mt-2">
-              <p className="text-sm text-gray-600">
-                {selectedTokens.length} token{selectedTokens.length > 1 ? "s" : ""} selected from{" "}
-                {selectedChain?.name || "a chain"} — cat is ready to bridge!
-              </p>
-              <button onClick={feedCat} className="mt-2 px-4 py-2 bg-blue-600 text-white rounded">
-                Bridge & Feed Cat 🪄
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Home;
