@@ -27,29 +27,28 @@ const calculateExchangeRate = (
   toDecimals: number,
 ): string => {
   try {
-    if (fromAmount === "0" || toAmount === "0") return "N/A";
+    if (!fromAmount || !toAmount) return "N/A";
 
     // Convert to same decimal places for accurate division
-    const normalizedFromAmount = Number(formatUnits(BigInt(fromAmount), fromDecimals));
-    const normalizedToAmount = Number(formatUnits(BigInt(toAmount), toDecimals));
+    const normalizedFromAmount = parseFloat(formatUnits(BigInt(fromAmount), fromDecimals));
+    const normalizedToAmount = parseFloat(formatUnits(BigInt(toAmount), toDecimals));
+
+    if (normalizedFromAmount === 0) return "N/A";
 
     // Calculate rate: how many toTokens you get for 1 fromToken
     const rate = normalizedToAmount / normalizedFromAmount;
 
-    // Format the rate to a reasonable number of decimal places
-    return rate.toFixed(6);
+    // Format with more decimal places for ETH values
+    // Use exponential notation for very small numbers
+    if (rate < 0.0001) {
+      return rate.toExponential(6);
+    }
+    // Otherwise show up to 8 decimal places
+    return rate.toFixed(8);
   } catch (error) {
     console.error("Error calculating exchange rate:", error);
     return "N/A";
   }
-};
-
-// Helper function to get token info
-const getTokenInfo = (address: string) => {
-  const token = Object.values(COMMON_TOKENS_BY_CHAIN[8453] || {}).find(
-    t => t.address.toLowerCase() === address.toLowerCase(),
-  );
-  return token;
 };
 
 interface TokenSwapProps {
@@ -59,14 +58,19 @@ interface TokenSwapProps {
 export const TokenSwap: React.FC<TokenSwapProps> = ({ chainId }) => {
   const { address } = useAccount();
   const [fromToken, setFromToken] = useState("");
-  const [toToken, setToToken] = useState("");
   const [amount, setAmount] = useState("");
   const [swapData, setSwapData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Get available tokens for current chain
-  const availableTokens = COMMON_TOKENS_BY_CHAIN[chainId] || {};
+  // Get available tokens for current chain, excluding ETH
+  const availableFromTokens = Object.values(COMMON_TOKENS_BY_CHAIN[chainId] || {}).filter(
+    token => token.symbol !== "ETH",
+  );
+
+  // ETH is always the destination token
+  const toToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+  const toTokenInfo = COMMON_TOKENS_BY_CHAIN[chainId]?.ETH;
 
   // Get token balances
   const {
@@ -81,8 +85,7 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ chainId }) => {
   } = useTokenBalance(toToken, chainId);
 
   // Get token info
-  const fromTokenInfo = getTokenInfo(fromToken);
-  const toTokenInfo = getTokenInfo(toToken);
+  const fromTokenInfo = availableFromTokens.find(t => t.address.toLowerCase() === fromToken.toLowerCase());
 
   // This would be your contract write hook
   const { writeContractAsync: approveToken } = useScaffoldWriteContract({
@@ -198,7 +201,7 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ chainId }) => {
 
   return (
     <div className="flex flex-col gap-4 p-4 bg-base-100 rounded-xl">
-      <h2 className="text-2xl font-bold text-center mb-4">Swap Tokens</h2>
+      <h2 className="text-2xl font-bold text-center mb-4">Swap to ETH</h2>
 
       {!address && (
         <div className="alert alert-warning">
@@ -229,7 +232,7 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ chainId }) => {
           onChange={e => setFromToken(e.target.value)}
         >
           <option value="">Select token</option>
-          {Object.values(availableTokens).map(token => (
+          {availableFromTokens.map(token => (
             <option key={token.address} value={token.address}>
               {token.symbol} - {token.name}
             </option>
@@ -258,22 +261,13 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ chainId }) => {
             </span>
           )}
         </div>
-        <select className="select select-bordered w-full" value={toToken} onChange={e => setToToken(e.target.value)}>
-          <option value="">Select token</option>
-          {Object.values(availableTokens).map(token => (
-            <option key={token.address} value={token.address}>
-              {token.symbol} - {token.name}
-            </option>
-          ))}
-        </select>
+        <div className="select select-bordered w-full flex items-center px-4 py-3">
+          <span>ETH - Ethereum</span>
+        </div>
       </div>
 
-      <button
-        className="btn btn-primary"
-        onClick={fetchSwapData}
-        disabled={!fromToken || !toToken || !amount || loading || fromToken === toToken}
-      >
-        {loading ? "Loading..." : "Swap"}
+      <button className="btn btn-primary" onClick={fetchSwapData} disabled={!fromToken || !amount || loading}>
+        {loading ? "Loading..." : "Swap to ETH"}
       </button>
 
       {swapData && (

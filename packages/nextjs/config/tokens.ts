@@ -86,4 +86,37 @@ export const COMMON_TOKENS_BY_CHAIN: { [chainId: number]: { [symbol: string]: an
       decimals: 18,
     },
   },
+  // Optimism (chainId: 10)
+  10: {
+    ETH: {
+      address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+      symbol: "ETH",
+      name: "Ethereum",
+      decimals: 18,
+    },
+    USDC: {
+      address: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85",
+      symbol: "USDC",
+      name: "USD Coin",
+      decimals: 6,
+    },
+    WETH: {
+      address: "0x4200000000000000000000000000000000000006",
+      symbol: "WETH",
+      name: "Wrapped Ether",
+      decimals: 18,
+    },
+    OP: {
+      address: "0x4200000000000000000000000000000000000042",
+      symbol: "OP",
+      name: "Optimism",
+      decimals: 18,
+    },
+    USDT: {
+      address: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+      symbol: "USDT",
+      name: "Tether USD",
+      decimals: 6,
+    },
+  },
 };

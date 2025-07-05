@@ -11,8 +11,8 @@ export type Chain = {
 // Supported chains for 1inch swaps
 export const SUPPORTED_CHAINS: Chain[] = [
   { id: 8453, name: "Base", icon: "🔵" },
-  { id: 42161, name: "Arbitrum", icon: "🔷" },
-  { id: 58008, name: "Zircuit", icon: "⚡" },
+  { id: 42161, name: "Arbitrum", icon: "🟢" },
+  { id: 10, name: "Optimism", icon: "🔴" },
 ];
 
 type ChainSelectorProps = {

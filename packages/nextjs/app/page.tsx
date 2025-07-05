@@ -6,6 +6,7 @@ import { NextPage } from "next";
 import { ChainSelector } from "~~/components/ChainAndTokenSelector";
 import { FatCat } from "~~/components/FatCat";
 import { TokenSwap } from "~~/components/TokenSwap";
+import { Vault } from "~~/components/Vault";
 
 const Home: NextPage = () => {
   //const { address: connectedAddress } = useAccount();
@@ -23,6 +24,9 @@ const Home: NextPage = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
       <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Piggy Fat Cat</h2>
+
+      {/* Add Vault component */}
+      <Vault />
 
       <div className="flex flex-col lg:flex-row items-center justify-center gap-10 w-full max-w-6xl">
         {/* Left: Chain and Token Selector */}
