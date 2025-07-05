@@ -1,72 +1,74 @@
 "use client";
 
-import Link from "next/link";
-import type { NextPage } from "next";
-import { useAccount } from "wagmi";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { Address } from "~~/components/scaffold-eth";
+import { useState } from "react";
+import { ChainAndTokenSelector } from "~~/components/ChainAndTokenSelector";
+import { FatCat } from "~~/components/FatCat";
 
-const Home: NextPage = () => {
-  const { address: connectedAddress } = useAccount();
+// Mock data
+const chains = [
+  { id: 1, name: "Arbitrum", icon: "🌀" },
+  { id: 2, name: "Optimism", icon: "🔴" },
+  { id: 3, name: "Base", icon: "🟦" },
+  { id: 4, name: "Scroll", icon: "🟡" },
+];
+
+const tokens = [
+  { symbol: "DAI", balance: 12.34 },
+  { symbol: "USDC", balance: 9.87 },
+  { symbol: "WETH", balance: 5.67 },
+  { symbol: "OP", balance: 2.11 },
+  { symbol: "ARB", balance: 1.23 },
+];
+
+export default function Home() {
+  const [weight, setWeight] = useState(1);
+  const [selectedChain, setSelectedChain] = useState<any>(null);
+  const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
+
+  const feedCat = () => setWeight(w => Math.min(w + 1, 10));
+  const exerciseCat = () => setWeight(w => Math.max(w - 1, 1));
+
+  const handleSelectionChange = (chain: any, tokens: string[]) => {
+    setSelectedChain(chain);
+    setSelectedTokens(tokens);
+  };
 
   return (
-    <>
-      <div className="flex items-center flex-col grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
-          </h1>
-          <div className="flex justify-center items-center space-x-2 flex-col">
-            <p className="my-2 font-medium">Connected Address:</p>
-            <Address address={connectedAddress} />
-          </div>
+    <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Piggy Fat Cat</h2>
 
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/app/page.tsx
-            </code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
+      <div className="flex flex-col lg:flex-row items-center justify-center gap-10 w-full max-w-6xl">
+        {/* Left: Chain and Token Selector */}
+        <div className="w-full max-w-md">
+          <ChainAndTokenSelector chains={chains} tokens={tokens} onSelectionChange={handleSelectionChange} />
         </div>
 
-        <div className="grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col md:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
+        {/* Right: FatCat */}
+        <div className="flex flex-col items-center gap-4 w-full max-w-sm">
+          <FatCat weight={weight} />
+
+          <div className="flex gap-2">
+            <button onClick={feedCat} className="px-4 py-2 bg-green-500 text-white rounded">
+              🍗 Feed Cat
+            </button>
+            <button onClick={exerciseCat} className="px-4 py-2 bg-red-500 text-white rounded">
+              🏃 Exercise Cat
+            </button>
           </div>
+
+          {selectedTokens.length > 0 && (
+            <div className="text-center mt-2">
+              <p className="text-sm text-gray-600">
+                {selectedTokens.length} token{selectedTokens.length > 1 ? "s" : ""} selected from{" "}
+                {selectedChain?.name || "a chain"} — cat is ready to bridge!
+              </p>
+              <button onClick={feedCat} className="mt-2 px-4 py-2 bg-blue-600 text-white rounded">
+                Bridge & Feed Cat 🪄
+              </button>
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
-};
-
-export default Home;
+}
