@@ -47,7 +47,7 @@ export const Bridging: React.FC<BridgingProps> = ({ onDeposit, swapAmount = "0",
     <div className="w-full">
       <div className="border-2 border-green-500 rounded-xl p-6 bg-base-200 shadow-xl">
         <h2 className="text-2xl font-bold mb-4 text-center flex items-center justify-center gap-2">
-          <span className="flex items-center justify-center bg-primary text-primary-content rounded-full w-8 h-8 text-lg font-bold">
+          <span className="flex items-center justify-center bg-green-500 text-white rounded-full w-8 h-8 text-lg font-bold">
             2
           </span>
           Bridge to Save

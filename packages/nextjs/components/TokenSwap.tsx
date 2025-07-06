@@ -310,7 +310,7 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ onChainChange, initialChai
   return (
     <div className="flex flex-col gap-4 p-4 bg-base-100 rounded-xl border-2 border-green-500">
       <h2 className="text-2xl font-bold text-center mb-4 flex items-center justify-center gap-2">
-        <span className="flex items-center justify-center bg-primary text-primary-content rounded-full w-8 h-8 text-lg font-bold">
+        <span className="flex items-center justify-center bg-green-500 text-white rounded-full w-8 h-8 text-lg font-bold">
           1
         </span>
         Swap to ETH
@@ -349,7 +349,9 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ onChainChange, initialChai
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
           <label className="text-sm">From Token</label>
-          {loadingFromBalance ? (
+          {!fromToken ? (
+            <span className="text-sm">Balance: 0</span>
+          ) : loadingFromBalance ? (
             <span className="text-sm opacity-50">Loading balance...</span>
           ) : (
             <span className="text-sm">
@@ -394,7 +396,9 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ onChainChange, initialChai
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
           <label className="text-sm">To Token</label>
-          {loadingToBalance ? (
+          {!fromToken ? (
+            <span className="text-sm">Balance: 0 ETH</span>
+          ) : loadingToBalance ? (
             <span className="text-sm opacity-50">Loading balance...</span>
           ) : (
             <span className="text-sm">

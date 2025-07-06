@@ -21,7 +21,7 @@ export const FatCat: React.FC<FatCatProps> = ({ weight = 1 }) => {
   return (
     <div className="rounded-xl p-4 bg-white shadow-md w-[300px] mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-center flex items-center justify-center gap-2">
-        <span className="flex items-center justify-center bg-primary text-primary-content rounded-full w-8 h-8 text-lg font-bold">
+        <span className="flex items-center justify-center bg-green-500 text-white rounded-full w-8 h-8 text-lg font-bold">
           3
         </span>
         Watch Your Cat Grow
