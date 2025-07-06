@@ -1,9 +1,8 @@
 import { Address } from "../scaffold-eth";
 import { formatEther } from "viem";
 import { optimismSepolia } from "viem/chains";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useReadContract } from "wagmi";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 // import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 
@@ -22,11 +21,25 @@ export const VaultComponent = () => {
     chainId: optimismSepolia.id,
   });
 
-  const { data: userBalance } = useScaffoldReadContract({
-    contractName: "FatCatOptimism" as any,
-    functionName: "getUserBalance" as any,
-    args: [connectedAddress],
-  } as any);
+  const {
+    data: userBalance,
+    isLoading: isUserBalanceLoading,
+    error: userBalanceError,
+  } = useReadContract({
+    abi: fatCatOptimismContract?.abi,
+    address: fatCatOptimismContract?.address,
+    functionName: "getUserBalance",
+    chainId: optimismSepolia.id,
+    args: connectedAddress ? [connectedAddress] : undefined,
+    query: {
+      enabled: !!(fatCatOptimismContract?.abi && fatCatOptimismContract?.address && connectedAddress),
+    },
+  });
+
+  // Log error for debugging
+  if (userBalanceError) {
+    console.error("User balance error:", userBalanceError);
+  }
 
   // Successfully calling getUserBalance function from FatCatOptimism contract
 
@@ -50,7 +63,19 @@ export const VaultComponent = () => {
         Contract Address: <Address address={fatCatOptimismContract?.address} />
       </div>
       <div>Total Value Locked in Vault: {vaultBalance ? formatEther(vaultBalance.value) : "0"} ETH</div>
-      <div>My Balance: {userBalance ? formatEther(userBalance as unknown as bigint) : "0"} ETH</div>
+      <div>
+        My Balance:{" "}
+        {!connectedAddress
+          ? "Please connect wallet"
+          : isUserBalanceLoading
+            ? "Loading..."
+            : userBalanceError
+              ? `Error loading balance: ${userBalanceError.message || "Unknown error"}`
+              : userBalance
+                ? formatEther(userBalance as bigint)
+                : "0"}{" "}
+        ETH
+      </div>
       {/* <button onClick={() => console.log(`0x${options}`)}>Options</button> */}
     </div>
   );

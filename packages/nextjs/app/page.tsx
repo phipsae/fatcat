@@ -22,11 +22,11 @@ const Home: NextPage = () => {
           </h1>
           <VaultComponent />
           <Withdraw />
-
+          <h2 className="text-2xl font-bold">Bridge from Arbitrum Sepolia</h2>
           {connectedAddress && <BridgeComponent endpoint={40232} address={connectedAddress} />}
-
+          <h2 className="text-2xl font-bold">Bridge from Base Sepolia</h2>
+          {connectedAddress && <BridgeComponent endpoint={40245} address={connectedAddress} />}
           <button onClick={() => console.log(optionsInBytes("1000000000000000000"))}>Options in bytes</button>
-
           <p className="text-center text-lg">
             Get started by editing{" "}
             <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
