@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { NextPage } from "next";
+import { useAccount } from "wagmi";
 //import { useAccount } from "wagmi";
 import { Bridging } from "~~/components/Bridging";
 import { FatCat } from "~~/components/FatCat";
@@ -9,7 +10,7 @@ import { TokenSwap } from "~~/components/TokenSwap";
 import { Vault } from "~~/components/Vault";
 
 const Home: NextPage = () => {
-  //const { address: connectedAddress } = useAccount();
+  const { address } = useAccount();
   const [weight, setWeight] = useState(1);
   const [chainId, setChainId] = useState(8453);
   const [swapAmount, setSwapAmount] = useState("0");
@@ -44,9 +45,8 @@ const Home: NextPage = () => {
           <TokenSwap onChainChange={handleChainChange} initialChainId={chainId} onSwapComplete={handleSwapComplete} />
         </div>
 
-        {/* Middle: Bridging */}
         <div className="w-full max-w-md">
-          <Bridging onDeposit={() => feedCat()} swapAmount={swapAmount} chainId={chainId} />
+          <Bridging onDeposit={() => feedCat()} swapAmount={swapAmount} chainId={chainId} address={address ?? ""} />
         </div>
 
         {/* Right: FatCat */}

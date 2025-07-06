@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { EtherInput } from "../scaffold-eth";
 import { optionsInBytes } from "./optionsInBytes";
 import { parseEther } from "viem";
-import { baseSepolia } from "viem/chains";
+import { base } from "viem/chains";
 import { useReadContract, useWriteContract } from "wagmi";
 import { useDeployedContractInfo, useTransactor } from "~~/hooks/scaffold-eth";
 
@@ -18,7 +18,7 @@ export const BridgeComponentBase = ({ endpoint, address }: { endpoint: number; a
 
   const { data: SkinnyCatBaseContract } = useDeployedContractInfo({
     contractName: "SkinnyCatBase" as any,
-    chainId: baseSepolia.id,
+    chainId: base.id,
   });
 
   // Helper function to safely convert ETH amount to wei
@@ -67,16 +67,11 @@ export const BridgeComponentBase = ({ endpoint, address }: { endpoint: number; a
 
   return (
     <div>
-      BridgeComponent BASE SEPOLIA
+      <h3>From Base</h3>
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Amount to Bridge (ETH)</label>
         <EtherInput value={ethAmount} onChange={setEthAmount} placeholder="Enter ETH amount" />
       </div>
-      {!!bridgeQuote && (
-        <button className="btn btn-primary" onClick={() => console.log((bridgeQuote as any).nativeFee)}>
-          Quote
-        </button>
-      )}
       {error && <div className="text-red-500">Error: {error.message}</div>}
       {isLoading && <div className="text-blue-500">Loading quote...</div>}
       {!!bridgeQuote && (
@@ -93,7 +88,7 @@ export const BridgeComponentBase = ({ endpoint, address }: { endpoint: number; a
               writeContractAsync({
                 abi: SkinnyCatBaseContract.abi,
                 address: SkinnyCatBaseContract.address,
-                chainId: baseSepolia.id,
+                chainId: base.id,
                 functionName: "sendEth",
                 args: [endpoint, getEthAmountInWei(), address, `0x${options}`],
                 value: (bridgeQuote as any)?.nativeFee ?? 0n,

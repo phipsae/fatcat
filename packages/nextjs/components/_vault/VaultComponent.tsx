@@ -1,6 +1,6 @@
 import { Address } from "../scaffold-eth";
 import { formatEther } from "viem";
-import { optimismSepolia } from "viem/chains";
+import { zircuit } from "viem/chains";
 import { useAccount, useBalance, useReadContract } from "wagmi";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 
@@ -11,14 +11,14 @@ export const VaultComponent = () => {
 
   // Get contract info from externalContracts.ts
   const { data: fatCatOptimismContract } = useDeployedContractInfo({
-    contractName: "FatCatOptimism" as any,
-    chainId: optimismSepolia.id,
+    contractName: "FatCatZircuit" as any,
+    chainId: zircuit.id,
   });
 
   // Get the contract's ETH balance using the address from contract info
   const { data: vaultBalance } = useBalance({
     address: fatCatOptimismContract?.address,
-    chainId: optimismSepolia.id,
+    chainId: zircuit.id,
   });
 
   const {
@@ -29,7 +29,7 @@ export const VaultComponent = () => {
     abi: fatCatOptimismContract?.abi,
     address: fatCatOptimismContract?.address,
     functionName: "getUserBalance",
-    chainId: optimismSepolia.id,
+    chainId: zircuit.id,
     args: connectedAddress ? [connectedAddress] : undefined,
     query: {
       enabled: !!(fatCatOptimismContract?.abi && fatCatOptimismContract?.address && connectedAddress),

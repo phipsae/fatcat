@@ -1,6 +1,6 @@
 "use client";
 
-import { optimismSepolia } from "viem/chains";
+import { zircuit } from "viem/chains";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 
@@ -8,19 +8,19 @@ export const Withdraw = () => {
   const { address: connectedAddress } = useAccount();
   const { writeContract } = useWriteContract();
 
-  const { data: fatCatOptimismContract } = useDeployedContractInfo({
-    contractName: "FatCatOptimism" as any,
-    chainId: optimismSepolia.id,
+  const { data: fatCatZircuitContract } = useDeployedContractInfo({
+    contractName: "FatCatZircuit" as any,
+    chainId: zircuit.id,
   });
 
   const { data: userBalance, error: userBalanceError } = useReadContract({
-    abi: fatCatOptimismContract?.abi,
-    address: fatCatOptimismContract?.address,
+    abi: fatCatZircuitContract?.abi,
+    address: fatCatZircuitContract?.address,
     functionName: "getUserBalance",
-    chainId: optimismSepolia.id,
+    chainId: zircuit.id,
     args: connectedAddress ? [connectedAddress] : undefined,
     query: {
-      enabled: !!(fatCatOptimismContract?.abi && fatCatOptimismContract?.address && connectedAddress),
+      enabled: !!(fatCatZircuitContract?.abi && fatCatZircuitContract?.address && connectedAddress),
     },
   });
 
@@ -38,9 +38,9 @@ export const Withdraw = () => {
       className="btn btn-primary"
       onClick={() =>
         writeContract({
-          abi: fatCatOptimismContract?.abi,
-          address: fatCatOptimismContract?.address,
-          chainId: optimismSepolia.id,
+          abi: fatCatZircuitContract?.abi,
+          address: fatCatZircuitContract?.address,
+          chainId: zircuit.id,
           functionName: "withdraw",
           args: [userBalance as bigint],
         })

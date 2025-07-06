@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { formatEther } from "viem";
-import { useAccount, useBalance } from "wagmi";
+import { zircuit } from "viem/chains";
+import { useAccount, useBalance, useReadContract, useWriteContract } from "wagmi";
+import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 
 interface VaultProps {
   onWithdrawAll: () => void;
@@ -13,25 +15,36 @@ export const Vault: React.FC<VaultProps> = ({ onWithdrawAll }) => {
   const { address } = useAccount();
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isHammerFlying, setIsHammerFlying] = useState(false);
-  const [hasWithdrawnAll, setHasWithdrawnAll] = useState(false);
-  const [lastKnownBalance, setLastKnownBalance] = useState<bigint>(0n);
   const hammerRef = useRef<HTMLDivElement>(null);
 
-  // Mock vault balance for now - replace with actual contract balance later
-  const { data: balance } = useBalance({
-    address: address,
+  const { writeContract } = useWriteContract();
+
+  const { data: fatCatZircuitContract } = useDeployedContractInfo({
+    contractName: "FatCatZircuit" as any,
+    chainId: zircuit.id,
   });
 
-  // Track balance changes to detect new deposits
-  useEffect(() => {
-    if (balance?.value) {
-      // If we have withdrawn all and see a new, higher balance, enable the withdraw all button
-      if (hasWithdrawnAll && balance.value > lastKnownBalance) {
-        setHasWithdrawnAll(false);
-      }
-      setLastKnownBalance(balance.value);
-    }
-  }, [balance?.value, hasWithdrawnAll, lastKnownBalance]);
+  // Get the contract's ETH balance using the address from contract info
+  const { data: vaultBalance } = useBalance({
+    address: fatCatZircuitContract?.address,
+    chainId: zircuit.id,
+  });
+
+  const { data: userBalance, error: userBalanceError } = useReadContract({
+    abi: fatCatZircuitContract?.abi,
+    address: fatCatZircuitContract?.address,
+    functionName: "getUserBalance",
+    chainId: zircuit.id,
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!(fatCatZircuitContract?.abi && fatCatZircuitContract?.address && address),
+    },
+  });
+
+  // Log error for debugging
+  if (userBalanceError) {
+    console.error("User balance error:", userBalanceError);
+  }
 
   const animateCatHead = () => {
     const catHead = document.querySelector('img[alt="Cat Head"]') as HTMLElement;
@@ -51,9 +64,14 @@ export const Vault: React.FC<VaultProps> = ({ onWithdrawAll }) => {
   };
 
   const handleWithdrawAll = async () => {
+    if (!userBalance || userBalance === 0n || !fatCatZircuitContract?.abi || !fatCatZircuitContract?.address) {
+      return;
+    }
+
     if (hammerRef.current) {
       setIsWithdrawing(true);
       setIsHammerFlying(true);
+
       // Get the hammer and cat positions
       const hammer = hammerRef.current;
       const withdrawButton = document.querySelector(".btn-error") as HTMLElement;
@@ -88,12 +106,21 @@ export const Vault: React.FC<VaultProps> = ({ onWithdrawAll }) => {
               bellyContainer.style.transform = "none";
               // Reset cat weight after the animation
               onWithdrawAll();
-              // Mark that we've withdrawn all funds
-              setHasWithdrawnAll(true);
             }, 800);
           }, 800);
         }
       }
+
+      // Execute the actual withdraw after the animation starts
+      setTimeout(() => {
+        writeContract({
+          abi: fatCatZircuitContract.abi,
+          address: fatCatZircuitContract.address,
+          chainId: zircuit.id,
+          functionName: "withdraw",
+          args: [userBalance as bigint],
+        });
+      }, 1000);
 
       // Reset after animation
       setTimeout(() => {
@@ -142,26 +169,39 @@ export const Vault: React.FC<VaultProps> = ({ onWithdrawAll }) => {
                 <Image src="/vault.png" alt="Vault" className="rounded-lg object-cover" fill priority />
               </div>
             </div>
-            <div className="flex-1">
+            <div className="flex-1 text-center">
               <h2 className="text-2xl font-bold mb-4">Your Savings Vault</h2>
-              <div className="stats bg-base-100 shadow flex flex-col items-center">
-                <div className="stat text-center">
-                  <div className="stat-title">Total Deposited</div>
-                  <div className="stat-value text-green-500">
-                    {balance ? `${Number(formatEther(balance.value)).toFixed(4)} ETH` : "0 ETH"}
+              <div className="flex flex-row items-center">
+                <div className="flex-1 flex justify-center h-40">
+                  <div className="stats bg-base-100 shadow ">
+                    <div className="stat text-center">
+                      <div className="stat-title">Total Vault Balance</div>
+                      <div className="stat-value text-blue-500">
+                        {vaultBalance ? `${Number(formatEther(vaultBalance.value)).toFixed(5)} ETH` : "0 ETH"}
+                      </div>
+                      <div className="stat-desc">All deposits combined</div>
+                    </div>
                   </div>
-                  <div className="mt-4">
-                    <div className="relative" style={{ zIndex: 1 }}>
-                      <button
-                        className="btn btn-error w-40"
-                        onClick={handleWithdrawAll}
-                        disabled={
-                          !address || isWithdrawing || !balance?.value || balance.value === 0n || hasWithdrawnAll
-                        }
-                        style={{ cursor: hasWithdrawnAll ? "not-allowed" : "url(/hammer.png), pointer" }}
-                      >
-                        {hasWithdrawnAll ? "Vault Empty" : "Withdraw All"}
-                      </button>
+                </div>
+                <div className="stats bg-base-100 shadow flex flex-col items-center h-40">
+                  <div className="stat text-center">
+                    <div className="stat-title">My Total Deposited</div>
+                    <div className="stat-value text-green-500">
+                      {userBalance ? `${Number(formatEther(userBalance as bigint)).toFixed(5)} ETH` : "0 ETH"}
+                    </div>
+                    <div className="mt-4">
+                      <div className="relative" style={{ zIndex: 1 }}>
+                        <button
+                          className="btn btn-error w-40"
+                          onClick={handleWithdrawAll}
+                          disabled={!address || isWithdrawing || !userBalance || userBalance === 0n}
+                          style={{
+                            cursor: !userBalance || userBalance === 0n ? "not-allowed" : "url(/hammer.png), pointer",
+                          }}
+                        >
+                          {isWithdrawing ? "Withdrawing..." : "Withdraw All"}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -39,7 +39,7 @@ export const BridgeComponent = ({ endpoint, address }: { endpoint: number; addre
 
   return (
     <div>
-      BridgeComponent
+      <h3>From Arbitrum</h3>
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Amount to Bridge (ETH)</label>
         <EtherInput value={ethAmount} onChange={setEthAmount} placeholder="Enter ETH amount" />
@@ -50,7 +50,7 @@ export const BridgeComponent = ({ endpoint, address }: { endpoint: number; addre
           try {
             await writeYourContractAsync({
               functionName: "sendEth",
-              args: [40232, getEthAmountInWei(), address, `0x${options}`],
+              args: [endpoint, getEthAmountInWei(), address, `0x${options}`],
               value: bridgeQuote?.nativeFee ?? 0n,
             });
           } catch (e) {
@@ -60,7 +60,6 @@ export const BridgeComponent = ({ endpoint, address }: { endpoint: number; addre
       >
         Bridge {ethAmount} ETH
       </button>
-      <button onClick={() => console.log(`0x${options}`)}>Options</button>
     </div>
   );
 };

@@ -12,9 +12,9 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
  * } as const;
  */
 const externalContracts = {
-  84532: {
+  8453: {
     SkinnyCatBase: {
-      address: "0x00B98dF90d4e309cb0bd2Da0F80dcdd813876502",
+      address: "0x850b971F782B85221529E429eAFB74AaD5b19c53",
       abi: [
         {
           inputs: [
@@ -686,9 +686,9 @@ const externalContracts = {
     },
   },
 
-  11155420: {
-    FatCatOptimism: {
-      address: "0x35123BA25F2278733d9240eb31F14b3445DEdF2d",
+  48900: {
+    FatCatZircuit: {
+      address: "0x04026A520276adf9D4C35A00E2851eC009a514b0",
       abi: [
         {
           inputs: [
@@ -1351,9 +1351,9 @@ const externalContracts = {
       ],
     },
   },
-  421614: {
+  42161: {
     SkinnyCatArbitrum: {
-      address: "0x091DF4a7CeA6A0Cd9159151F9A0dE4Ce977aa7Ac",
+      address: "0x850b971F782B85221529E429eAFB74AaD5b19c53",
       abi: [
         {
           inputs: [
