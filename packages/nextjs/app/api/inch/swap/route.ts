@@ -23,8 +23,15 @@ export async function GET(request: Request) {
 
     // Build the query string
     const queryString = new URLSearchParams(params).toString();
+    console.log("🔍 API Query:", {
+      endpoint: `${INCH_API_URL}/swap/v6.0/${chainId}/${action}`,
+      queryString,
+      params,
+    });
 
-    const response = await fetch(`${INCH_API_URL}/swap/v5.2/${chainId}/${action}?${queryString}`, {
+    //approve/allowance
+    const response = await fetch(`${INCH_API_URL}/swap/v6.0/${chainId}/${action}?${queryString}`, {
+      //const response = await fetch(`${INCH_API_URL}/swap/v6.0/${chainId}/approve/allowance?${queryString}`, {
       headers: {
         accept: "application/json",
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_1INCH_API_KEY}`,
