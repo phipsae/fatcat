@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { NextPage } from "next";
 //import { useAccount } from "wagmi";
+import { Bridging } from "~~/components/Bridging";
 import { ChainSelector } from "~~/components/ChainAndTokenSelector";
 import { FatCat } from "~~/components/FatCat";
 import { TokenSwap } from "~~/components/TokenSwap";
@@ -12,13 +13,20 @@ const Home: NextPage = () => {
   //const { address: connectedAddress } = useAccount();
   const [weight, setWeight] = useState(1);
   const [chainId, setChainId] = useState(8453);
+  const [swapAmount, setSwapAmount] = useState("0");
 
   const feedCat = () => setWeight(w => Math.min(w + 1, 10));
   const exerciseCat = () => setWeight(w => Math.max(w - 1, 1));
+  const resetCat = () => setWeight(1);
 
   // Handle chain change
   const handleChainChange = (newChainId: number) => {
     setChainId(newChainId);
+  };
+
+  // Handle swap completion
+  const handleSwapComplete = (amount: string) => {
+    setSwapAmount(amount);
   };
 
   return (
@@ -26,17 +34,18 @@ const Home: NextPage = () => {
       <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Piggy Fat Cat</h2>
 
       {/* Add Vault component */}
-      <Vault />
+      <Vault onWithdrawAll={resetCat} />
 
-      <div className="flex flex-col lg:flex-row items-center justify-center gap-10 w-full max-w-6xl">
+      <div className="flex flex-col lg:flex-row items-start justify-center gap-10 w-full max-w-7xl">
         {/* Left: Chain and Token Selector */}
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md flex flex-col gap-6">
           <ChainSelector onChainChange={handleChainChange} initialChainId={chainId} />
+          <TokenSwap chainId={chainId} onSwapComplete={handleSwapComplete} />
+        </div>
 
-          {/* Add TokenSwap component */}
-          <div className="mt-6">
-            <TokenSwap chainId={chainId} />
-          </div>
+        {/* Middle: Bridging */}
+        <div className="w-full max-w-md">
+          <Bridging onDeposit={() => feedCat()} swapAmount={swapAmount} chainId={chainId} />
         </div>
 
         {/* Right: FatCat */}
