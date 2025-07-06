@@ -76,8 +76,10 @@ export const FatCat: React.FC<FatCatProps> = ({ weight = 1 }) => {
           </div>
         </div>
 
-        {/* Weight Label */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-sm mt-2">Weight: {clampedWeight}</div>
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-sm mt-2 text-center">
+          <div>Fat Level: {clampedWeight}</div>
+          <div className="text-xs text-gray-500 mt-1">(1 fat level per 0.00001 ETH deposited)</div>
+        </div>
       </div>
     </div>
   );

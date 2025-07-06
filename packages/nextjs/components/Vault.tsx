@@ -12,10 +12,13 @@ interface VaultProps {
 }
 
 export const Vault: React.FC<VaultProps> = ({ onWithdrawAll }) => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isHammerFlying, setIsHammerFlying] = useState(false);
   const hammerRef = useRef<HTMLDivElement>(null);
+
+  // Check if user is on Zircuit chain
+  const isOnZircuit = chain?.id === zircuit.id;
 
   const { writeContract } = useWriteContract();
 
@@ -194,12 +197,15 @@ export const Vault: React.FC<VaultProps> = ({ onWithdrawAll }) => {
                         <button
                           className="btn btn-error w-40"
                           onClick={handleWithdrawAll}
-                          disabled={!address || isWithdrawing || !userBalance || userBalance === 0n}
+                          disabled={!address || isWithdrawing || !userBalance || userBalance === 0n || !isOnZircuit}
                           style={{
-                            cursor: !userBalance || userBalance === 0n ? "not-allowed" : "url(/hammer.png), pointer",
+                            cursor:
+                              !userBalance || userBalance === 0n || !isOnZircuit
+                                ? "not-allowed"
+                                : "url(/hammer.png), pointer",
                           }}
                         >
-                          {isWithdrawing ? "Withdrawing..." : "Withdraw All"}
+                          {isWithdrawing ? "Withdrawing..." : !isOnZircuit ? "Switch to Zircuit" : "Withdraw All"}
                         </button>
                       </div>
                     </div>

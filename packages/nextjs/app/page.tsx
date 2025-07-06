@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NextPage } from "next";
-import { useAccount } from "wagmi";
-//import { useAccount } from "wagmi";
+import { formatEther } from "viem";
+import { zircuit } from "viem/chains";
+import { useAccount, useReadContract } from "wagmi";
 import { Bridging } from "~~/components/Bridging";
 import { FatCat } from "~~/components/FatCat";
 import { TokenSwap } from "~~/components/TokenSwap";
 import { Vault } from "~~/components/Vault";
+import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
   const { address } = useAccount();
@@ -15,8 +17,36 @@ const Home: NextPage = () => {
   const [chainId, setChainId] = useState(8453);
   const [swapAmount, setSwapAmount] = useState("0");
 
+  // Get contract info for fetching user balance
+  const { data: fatCatZircuitContract } = useDeployedContractInfo({
+    contractName: "FatCatZircuit" as any,
+    chainId: zircuit.id,
+  });
+
+  // Get user's vault balance
+  const { data: userBalance } = useReadContract({
+    abi: fatCatZircuitContract?.abi,
+    address: fatCatZircuitContract?.address,
+    functionName: "getUserBalance",
+    chainId: zircuit.id,
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!(fatCatZircuitContract?.abi && fatCatZircuitContract?.address && address),
+    },
+  });
+
+  // Calculate weight based on balance (1 weight per 0.00001 ETH)
+  useEffect(() => {
+    if (userBalance) {
+      const balanceInEth = Number(formatEther(userBalance as bigint));
+      const calculatedWeight = Math.floor(balanceInEth / 0.00001);
+      // Clamp between 1 and 10
+      const clampedWeight = Math.min(Math.max(calculatedWeight, 1), 10);
+      setWeight(clampedWeight);
+    }
+  }, [userBalance]);
+
   const feedCat = () => setWeight(w => Math.min(w + 1, 10));
-  const exerciseCat = () => setWeight(w => Math.max(w - 1, 1));
   const resetCat = () => setWeight(1);
 
   // Handle chain change
@@ -31,9 +61,9 @@ const Home: NextPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">Turn Your Crypto Dust into Yield</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">Feed your cat on Zircuit</h1>
       <p className="text-gray-600 text-lg mb-6 text-center">
-        Bridge your leftover tokens from other L2s and start earning on Zircuit.
+        Bridge your leftover tokens from other L2s to make your cat fatter.
       </p>
 
       {/* Add Vault component */}
@@ -53,13 +83,10 @@ const Home: NextPage = () => {
         <div className="flex flex-col items-center gap-4 w-full max-w-sm">
           <FatCat weight={weight} />
 
-          <div className="flex gap-2">
-            <button onClick={feedCat} className="px-4 py-2 bg-green-500 text-white rounded">
-              🍗 Feed Cat
-            </button>
-            <button onClick={exerciseCat} className="px-4 py-2 bg-red-500 text-white rounded">
-              🏃 Exercise Cat
-            </button>
+          <div className="text-center">
+            <div className="text-sm text-gray-600 mb-2">
+              Fat level automatically updates based on your vault balance!
+            </div>
           </div>
         </div>
       </div>
