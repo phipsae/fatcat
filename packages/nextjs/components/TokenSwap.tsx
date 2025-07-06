@@ -8,6 +8,13 @@ import { COMMON_TOKENS_BY_CHAIN } from "~~/config/tokens";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useTokenBalance } from "~~/hooks/scaffold-eth/useTokenBalance";
 
+// Supported chains for 1inch swaps
+export const SUPPORTED_CHAINS = [
+  { id: 8453, name: "Base", icon: "🔵" },
+  { id: 42161, name: "Arbitrum", icon: "🟢" },
+  { id: 10, name: "Optimism", icon: "🔴" },
+];
+
 // Helper function to safely format token amounts
 const safeFormatUnits = (value: string | undefined | null, decimals: number = 18): string => {
   if (!value) return "0";
@@ -63,7 +70,8 @@ const calculateExchangeRate = (
 };
 
 interface TokenSwapProps {
-  chainId: number;
+  onChainChange: (chainId: number) => void;
+  initialChainId?: number;
   onSwapComplete?: (amount: string) => void;
 }
 
@@ -103,8 +111,9 @@ const formatDexNames = (protocols: any[]): string => {
   return `${dexNames[0]} and ${dexNames.length - 1} others`;
 };
 
-export const TokenSwap: React.FC<TokenSwapProps> = ({ chainId, onSwapComplete }) => {
+export const TokenSwap: React.FC<TokenSwapProps> = ({ onChainChange, initialChainId = 8453, onSwapComplete }) => {
   const { address } = useAccount();
+  const [chainId, setChainId] = useState(initialChainId);
   const [fromToken, setFromToken] = useState("");
   const [amount, setAmount] = useState("");
   const [swapData, setSwapData] = useState<SwapData | null>(null);
@@ -136,6 +145,13 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ chainId, onSwapComplete })
 
   // Get token info
   const fromTokenInfo = availableFromTokens.find(t => t.address.toLowerCase() === fromToken.toLowerCase());
+
+  // Handle chain change
+  const handleChainChange = (newChainId: number) => {
+    setChainId(newChainId);
+    setFromToken(""); // Reset token selection when chain changes
+    onChainChange(newChainId);
+  };
 
   // This would be your contract write hook
   const { writeContractAsync: approveToken } = useScaffoldWriteContract({
@@ -292,8 +308,31 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ chainId, onSwapComplete })
   const formattedToBalance = safeFormatUnits(toTokenBalance, toTokenInfo?.decimals);
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-base-100 rounded-xl">
-      <h2 className="text-2xl font-bold text-center mb-4">Swap to ETH</h2>
+    <div className="flex flex-col gap-4 p-4 bg-base-100 rounded-xl border-2 border-green-500">
+      <h2 className="text-2xl font-bold text-center mb-4 flex items-center justify-center gap-2">
+        <span className="flex items-center justify-center bg-primary text-primary-content rounded-full w-8 h-8 text-lg font-bold">
+          1
+        </span>
+        Swap to ETH
+      </h2>
+
+      {/* Chain Selector */}
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold mb-2">Select Chain</h3>
+        <div className="flex flex-wrap gap-3">
+          {SUPPORTED_CHAINS.map(chain => (
+            <button
+              key={chain.id}
+              onClick={() => handleChainChange(chain.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition 
+                ${chainId === chain.id ? "bg-primary text-primary-content" : "bg-base-200 hover:bg-base-300"}`}
+            >
+              <span>{chain.icon}</span>
+              <span>{chain.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       {!address && (
         <div className="alert alert-warning">

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { NextPage } from "next";
 //import { useAccount } from "wagmi";
 import { Bridging } from "~~/components/Bridging";
-import { ChainSelector } from "~~/components/ChainAndTokenSelector";
 import { FatCat } from "~~/components/FatCat";
 import { TokenSwap } from "~~/components/TokenSwap";
 import { Vault } from "~~/components/Vault";
@@ -31,16 +30,18 @@ const Home: NextPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">Piggy Fat Cat</h2>
+      <h1 className="text-2xl font-bold text-gray-800 mb-2 text-center">Turn Your Crypto Dust into Yield</h1>
+      <p className="text-gray-600 text-lg mb-6 text-center">
+        Bridge your leftover tokens from other L2s and start earning on Zircuit.
+      </p>
 
       {/* Add Vault component */}
       <Vault onWithdrawAll={resetCat} />
 
       <div className="flex flex-col lg:flex-row items-start justify-center gap-10 w-full max-w-7xl">
-        {/* Left: Chain and Token Selector */}
+        {/* Left: Token Swap with Chain Selector */}
         <div className="w-full max-w-md flex flex-col gap-6">
-          <ChainSelector onChainChange={handleChainChange} initialChainId={chainId} />
-          <TokenSwap chainId={chainId} onSwapComplete={handleSwapComplete} />
+          <TokenSwap onChainChange={handleChainChange} initialChainId={chainId} onSwapComplete={handleSwapComplete} />
         </div>
 
         {/* Middle: Bridging */}

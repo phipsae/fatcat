@@ -8,7 +8,7 @@ type FatCatProps = {
 
 export const FatCat: React.FC<FatCatProps> = ({ weight = 1 }) => {
   const clampedWeight = Math.min(Math.max(weight, 1), 10);
-  const bellyScale = 1 + clampedWeight * 0.03; // tweak the `20` to your liking
+  const bellyScale = 1 + clampedWeight * 0.08; // tweak the `20` to your liking
 
   // Base belly size (before scaling)
   const bellyWidth = 146;
@@ -19,7 +19,13 @@ export const FatCat: React.FC<FatCatProps> = ({ weight = 1 }) => {
   const scaledHeight = bellyHeight * bellyScale;
 
   return (
-    <div className="border-4 border-gray-800 rounded-xl p-4 bg-white shadow-md w-[300px] mx-auto">
+    <div className="rounded-xl p-4 bg-white shadow-md w-[300px] mx-auto">
+      <h2 className="text-2xl font-bold mb-4 text-center flex items-center justify-center gap-2">
+        <span className="flex items-center justify-center bg-primary text-primary-content rounded-full w-8 h-8 text-lg font-bold">
+          3
+        </span>
+        Watch Your Cat Grow
+      </h2>
       <div className="relative w-[300px] h-[360px] mx-auto">
         {/* Head (185x141) centered */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[185px] h-[141px] z-10">

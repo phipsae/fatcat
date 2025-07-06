@@ -143,7 +143,7 @@ export const Vault: React.FC<VaultProps> = ({ onWithdrawAll }) => {
               </div>
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold mb-4">Your Vault Position</h2>
+              <h2 className="text-2xl font-bold mb-4">Your Savings Vault</h2>
               <div className="stats bg-base-100 shadow flex flex-col items-center">
                 <div className="stat text-center">
                   <div className="stat-title">Total Deposited</div>

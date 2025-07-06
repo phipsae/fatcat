@@ -46,7 +46,12 @@ export const Bridging: React.FC<BridgingProps> = ({ onDeposit, swapAmount = "0",
   return (
     <div className="w-full">
       <div className="border-2 border-green-500 rounded-xl p-6 bg-base-200 shadow-xl">
-        <h2 className="text-2xl font-bold mb-4 text-center">Bridge to Save</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center flex items-center justify-center gap-2">
+          <span className="flex items-center justify-center bg-primary text-primary-content rounded-full w-8 h-8 text-lg font-bold">
+            2
+          </span>
+          Bridge to Save
+        </h2>
         <div className="flex flex-col gap-4">
           {Number(amount) > 0 && !isSuccess && (
             <div className="text-center text-sm text-green-600 bg-green-100 p-3 rounded-lg">
