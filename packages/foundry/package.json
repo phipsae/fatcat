@@ -29,5 +29,8 @@
   },
   "devDependencies": {
     "shx": "^0.3.4"
+  },
+  "resolutions": {
+    "@openzeppelin/contracts": "^5.0.1"
   }
 }

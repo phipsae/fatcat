@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { EtherInput } from "./scaffold-eth";
 import { formatUnits, parseUnits } from "viem";
-import { useAccount } from "wagmi";
+import { useAccount, useWriteContract } from "wagmi";
 import { COMMON_TOKENS_BY_CHAIN } from "~~/config/tokens";
-import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useTokenBalance } from "~~/hooks/scaffold-eth/useTokenBalance";
 
 // Supported chains for 1inch swaps
@@ -153,10 +152,22 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ onChainChange, initialChai
     onChainChange(newChainId);
   };
 
-  // This would be your contract write hook
-  const { writeContractAsync: approveToken } = useScaffoldWriteContract({
-    contractName: "ERC20", // You'll need to have ERC20 ABI in your contracts
-  });
+  // ERC20 ABI for approve function
+  const erc20Abi = [
+    {
+      name: "approve",
+      type: "function",
+      stateMutability: "nonpayable",
+      inputs: [
+        { name: "spender", type: "address" },
+        { name: "amount", type: "uint256" },
+      ],
+      outputs: [{ name: "", type: "bool" }],
+    },
+  ] as const;
+
+  // Use wagmi hook directly for ERC20 approvals
+  const { writeContractAsync: approveToken } = useWriteContract();
 
   const fetchQuote = async () => {
     if (!address || !fromToken || !amount || !fromTokenInfo) return;
@@ -272,6 +283,8 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ onChainChange, initialChai
 
       if (swapData.tx?.approve && fromToken !== "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
         await approveToken({
+          abi: erc20Abi,
+          address: fromToken as `0x${string}`,
           functionName: "approve",
           args: [swapData.tx.to, swapData.tx.value || swapData.tx.data?.value || "0"],
         });
@@ -324,7 +337,7 @@ export const TokenSwap: React.FC<TokenSwapProps> = ({ onChainChange, initialChai
             <button
               key={chain.id}
               onClick={() => handleChainChange(chain.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition 
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition
                 ${chainId === chain.id ? "bg-primary text-primary-content" : "bg-base-200 hover:bg-base-300"}`}
             >
               <span>{chain.icon}</span>
