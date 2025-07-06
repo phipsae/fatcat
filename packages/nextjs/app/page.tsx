@@ -5,6 +5,7 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { BridgeComponent } from "~~/components/_bridge/BridgeComponent";
+import { BridgeComponentBase } from "~~/components/_bridge/BridgeComponentBase";
 import { optionsInBytes } from "~~/components/_bridge/optionsInBytes";
 import { VaultComponent } from "~~/components/_vault/VaultComponent";
 import { Withdraw } from "~~/components/_vault/Withdraw";
@@ -25,7 +26,7 @@ const Home: NextPage = () => {
           <h2 className="text-2xl font-bold">Bridge from Arbitrum Sepolia</h2>
           {connectedAddress && <BridgeComponent endpoint={40232} address={connectedAddress} />}
           <h2 className="text-2xl font-bold">Bridge from Base Sepolia</h2>
-          {connectedAddress && <BridgeComponent endpoint={40245} address={connectedAddress} />}
+          {connectedAddress && <BridgeComponentBase endpoint={40232} address={connectedAddress} />}
           <button onClick={() => console.log(optionsInBytes("1000000000000000000"))}>Options in bytes</button>
           <p className="text-center text-lg">
             Get started by editing{" "}
