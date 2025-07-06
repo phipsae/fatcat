@@ -51,7 +51,7 @@ export const BridgeComponentBase = ({ endpoint, address }: { endpoint: number; a
   } = useReadContract({
     abi: SkinnyCatBaseContract?.abi,
     address: SkinnyCatBaseContract?.address,
-    functionName: "quoteSendString",
+    functionName: "quoteSendEth",
     // chainId: baseSepolia.id,
     args: [endpoint, getEthAmountInWei(), address, `0x${options}`, false],
     query: {
@@ -94,7 +94,7 @@ export const BridgeComponentBase = ({ endpoint, address }: { endpoint: number; a
                 abi: SkinnyCatBaseContract.abi,
                 address: SkinnyCatBaseContract.address,
                 chainId: baseSepolia.id,
-                functionName: "sendString",
+                functionName: "sendEth",
                 args: [endpoint, getEthAmountInWei(), address, `0x${options}`],
                 value: (bridgeQuote as any)?.nativeFee ?? 0n,
               });

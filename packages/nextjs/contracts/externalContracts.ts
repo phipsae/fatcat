@@ -14,7 +14,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const externalContracts = {
   84532: {
     SkinnyCatBase: {
-      address: "0x9590E3c940Aa1299B56cc58D8CaC58ff050B0452",
+      address: "0x00B98dF90d4e309cb0bd2Da0F80dcdd813876502",
       abi: [
         {
           inputs: [
@@ -247,19 +247,6 @@ const externalContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "SEND_WITH_ETH",
-          outputs: [
-            {
-              internalType: "uint16",
-              name: "",
-              type: "uint16",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [
             {
               components: [
@@ -322,35 +309,6 @@ const externalContracts = {
             },
           ],
           stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes",
-              name: "_message",
-              type: "bytes",
-            },
-          ],
-          name: "decodeStringWithEth",
-          outputs: [
-            {
-              internalType: "string",
-              name: "_string",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "_ethAmount",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_receiver",
-              type: "address",
-            },
-          ],
-          stateMutability: "pure",
           type: "function",
         },
         {
@@ -431,45 +389,6 @@ const externalContracts = {
               internalType: "bool",
               name: "",
               type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastEthAmount",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastMessage",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastSender",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
             },
           ],
           stateMutability: "view",
@@ -627,7 +546,7 @@ const externalContracts = {
               type: "bool",
             },
           ],
-          name: "quoteSendString",
+          name: "quoteSendEth",
           outputs: [
             {
               components: [
@@ -680,7 +599,7 @@ const externalContracts = {
               type: "bytes",
             },
           ],
-          name: "sendString",
+          name: "sendEth",
           outputs: [],
           stateMutability: "payable",
           type: "function",
@@ -769,7 +688,7 @@ const externalContracts = {
 
   11155420: {
     FatCatOptimism: {
-      address: "0xc8Cc9d999CCB4688a69F024dcaa57Ebe59F8b830",
+      address: "0x35123BA25F2278733d9240eb31F14b3445DEdF2d",
       abi: [
         {
           inputs: [
@@ -1022,32 +941,6 @@ const externalContracts = {
           type: "event",
         },
         {
-          inputs: [],
-          name: "SEND",
-          outputs: [
-            {
-              internalType: "uint16",
-              name: "",
-              type: "uint16",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "SEND_WITH_ETH",
-          outputs: [
-            {
-              internalType: "uint16",
-              name: "",
-              type: "uint16",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [
             {
               components: [
@@ -1209,45 +1102,6 @@ const externalContracts = {
               internalType: "bool",
               name: "",
               type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastEthAmount",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastMessage",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastSender",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
             },
           ],
           stateMutability: "view",
@@ -1499,7 +1353,7 @@ const externalContracts = {
   },
   421614: {
     SkinnyCatArbitrum: {
-      address: "0x4552da51328ff6EC3252dbeAd067F541c471d467",
+      address: "0x091DF4a7CeA6A0Cd9159151F9A0dE4Ce977aa7Ac",
       abi: [
         {
           inputs: [
@@ -1732,19 +1586,6 @@ const externalContracts = {
           type: "function",
         },
         {
-          inputs: [],
-          name: "SEND_WITH_ETH",
-          outputs: [
-            {
-              internalType: "uint16",
-              name: "",
-              type: "uint16",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
           inputs: [
             {
               components: [
@@ -1807,35 +1648,6 @@ const externalContracts = {
             },
           ],
           stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "bytes",
-              name: "_message",
-              type: "bytes",
-            },
-          ],
-          name: "decodeStringWithEth",
-          outputs: [
-            {
-              internalType: "string",
-              name: "_string",
-              type: "string",
-            },
-            {
-              internalType: "uint256",
-              name: "_ethAmount",
-              type: "uint256",
-            },
-            {
-              internalType: "address",
-              name: "_receiver",
-              type: "address",
-            },
-          ],
-          stateMutability: "pure",
           type: "function",
         },
         {
@@ -1916,45 +1728,6 @@ const externalContracts = {
               internalType: "bool",
               name: "",
               type: "bool",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastEthAmount",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastMessage",
-          outputs: [
-            {
-              internalType: "string",
-              name: "",
-              type: "string",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastSender",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
             },
           ],
           stateMutability: "view",
@@ -2112,7 +1885,7 @@ const externalContracts = {
               type: "bool",
             },
           ],
-          name: "quoteSendString",
+          name: "quoteSendEth",
           outputs: [
             {
               components: [
@@ -2165,7 +1938,7 @@ const externalContracts = {
               type: "bytes",
             },
           ],
-          name: "sendString",
+          name: "sendEth",
           outputs: [],
           stateMutability: "payable",
           type: "function",

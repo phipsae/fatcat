@@ -29,7 +29,7 @@ export const BridgeComponent = ({ endpoint, address }: { endpoint: number; addre
 
   const { data: bridgeQuote } = useScaffoldReadContract({
     contractName: "SkinnyCatArbitrum",
-    functionName: "quoteSendString",
+    functionName: "quoteSendEth",
     args: [endpoint, getEthAmountInWei(), address, `0x${options}`, false],
   });
 
@@ -49,7 +49,7 @@ export const BridgeComponent = ({ endpoint, address }: { endpoint: number; addre
         onClick={async () => {
           try {
             await writeYourContractAsync({
-              functionName: "sendString",
+              functionName: "sendEth",
               args: [40232, getEthAmountInWei(), address, `0x${options}`],
               value: bridgeQuote?.nativeFee ?? 0n,
             });

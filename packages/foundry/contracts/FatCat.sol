@@ -17,21 +17,6 @@ contract FatCat is OApp, OAppOptionsType3 {
     /// @notice Event emitted when a user withdraws ETH from the vault
     event VaultWithdraw(address indexed user, uint256 amount);
 
-    /// @notice Last string received from any remote chain
-    string public lastMessage;
-
-    /// @notice Last ETH amount received from any remote chain
-    uint256 public lastEthAmount;
-
-    /// @notice Last sender address from any remote chain
-    address public lastSender;
-
-    /// @notice Msg type for sending a string, for use in OAppOptionsType3 as an enforced option
-    uint16 public constant SEND = 1;
-
-    /// @notice Msg type for sending a string with ETH
-    uint16 public constant SEND_WITH_ETH = 2;
-
     /// @notice Event emitted when ETH is received
     event EthReceived(address indexed sender, uint256 amount, string message);
 
@@ -56,12 +41,10 @@ contract FatCat is OApp, OAppOptionsType3 {
         // 1. Decode the incoming bytes into a string
         //    You can use abi.decode, abi.decodePacked, or directly splice bytes
         //    if you know the format of your data structures
-        string memory _string = abi.decode(_message, (string));
+        (uint256 _transferAmount, address _user) = abi.decode(_message, (uint256, address));
 
         // 2. Apply your custom logic. In this example, store it in `lastMessage`.
-        lastMessage = _string;
-
-        _processVaultDeposit(tx.origin, 0);
+        _processVaultDeposit(_user, _transferAmount);
 
         // 3. (Optional) Trigger further on-chain actions.
         //    e.g., emit an event, mint tokens, call another contract, etc.
@@ -69,7 +52,9 @@ contract FatCat is OApp, OAppOptionsType3 {
     }
 
     /// @notice Allow contract to receive ETH
-    receive() external payable { }
+    receive() external payable {
+        _processVaultDeposit(msg.sender, msg.value);
+    }
 
     /// @notice Withdraw ETH from the vault
     /// @param _amount Amount to withdraw (in wei)
@@ -100,5 +85,9 @@ contract FatCat is OApp, OAppOptionsType3 {
 
         // Emit event (crossChain = true)
         emit VaultDeposit(_user, _amount, true);
+    }
+
+    function getUserBalance(address _user) external view returns (uint256) {
+        return userBalance[_user];
     }
 }
